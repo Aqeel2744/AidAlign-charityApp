@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Sidebar from '../components/sidebar'; 
+import Sidebar from '../components/Sidebar'; 
 import api from '../utils/api';
 import { useRef } from 'react';
 import jsPDF from 'jspdf';
