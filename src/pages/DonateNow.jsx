@@ -5,7 +5,8 @@ import {
   Droplet, Utensils, Hand, Baby, Accessibility, TreePine, 
   Building2, Coins, HelpCircle, CheckCircle2, X, CreditCard, 
   DollarSign, Activity, Globe, Award, Search, Check, 
-  ChevronsUpDown, ArrowRight, Wallet, ArrowUpRight, TrendingUp, Calendar, Filter
+  ChevronsUpDown, ArrowRight, Wallet, ArrowUpRight, TrendingUp, Calendar, Filter,
+  Menu
 } from 'lucide-react';
 import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
@@ -27,7 +28,7 @@ const DONATION_CATEGORIES = [
   { id: 'community', title: 'Community Services', icon: Globe, description: 'Develop infrastructure upgrades, low-cost microfinance avenues, and shared public spaces.', progress: 51 },
   { id: 'water', title: 'Water Projects', icon: Droplet, description: 'Construct deep-well clean solar extraction points and water treatment pipelines.', progress: 87 },
   { id: 'food', title: 'Food Distribution', icon: Utensils, description: 'Finance immediate grocery rashan packs and daily community kitchen programs.', progress: 83 },
-  { id: 'women', title: "Women's Empowerment", icon: Hand, description: 'Fund tailored technical micro-grants, training equipment, and legal counseling networks.', progress: 60 },
+  { id: "women", title: "Women's Empowerment", icon: Hand, description: 'Fund tailored technical micro-grants, training equipment, and legal counseling networks.', progress: 60 },
   { id: 'child', title: 'Child Welfare', icon: Baby, description: 'Eliminate juvenile street labor through strict nourishment stipends and healthcare initiatives.', progress: 72 },
   { id: 'disability', title: 'Disability Support', icon: Accessibility, description: 'Provide customized mechanical wheelchairs, speech-therapy infrastructure, and job assistance.', progress: 39 },
   { id: 'environmental', title: 'Environmental Projects', icon: TreePine, description: 'Expand metropolitan tree plantation initiatives and modern recycling centers.', progress: 55 },
@@ -75,6 +76,9 @@ export default function DonateNowPage() {
   const [selectedCurrency, setSelectedCurrency] = useState('PKR');
   const [formNotes, setFormNotes] = useState('');
   const [txnId, setTxnId] = useState('');
+  
+  // Mobile Responsive Drawer Control
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Dynamic Organization Mapping Hook
   const activeOrganizations = useMemo(() => {
@@ -128,9 +132,46 @@ export default function DonateNowPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#FDFBF7] text-slate-900 antialiased font-sans selection:bg-[#6B1F2A]/10 selection:text-[#6B1F2A]">
+    <div className="flex min-h-screen bg-[#FDFBF7] text-slate-900 antialiased font-sans selection:bg-[#6B1F2A]/10 selection:text-[#6B1F2A] relative pt-16 lg:pt-0">
       
-      {/* 1. SIDEBAR */}
+      {/* MOBILE DRAWER OVERLAY & SIDEBAR WRAPPER */}
+      <AnimatePresence>
+        {isMobileSidebarOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="fixed inset-0 bg-slate-950 z-40 lg:hidden"
+            />
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="fixed inset-y-0 left-0 w-[290px] bg-white z-50 p-6 shadow-2xl lg:hidden overflow-y-auto"
+            >
+              <div className="flex justify-end mb-4">
+                <button onClick={() => setIsMobileSidebarOpen(false)} className="p-2 rounded-xl border border-slate-100 text-slate-700 hover:bg-slate-50">
+                  <X size={18} />
+                </button>
+              </div>
+              <Sidebar isMobile={true} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* FLOATING MOBILE MENU TRIGGER BUTTON */}
+      <button 
+        onClick={() => setIsMobileSidebarOpen(true)}
+        className="fixed left-4 top-3.5 p-2 rounded-xl border border-slate-200/80 bg-white text-slate-700 lg:hidden hover:bg-slate-50 transition-colors z-30 shadow-sm"
+      >
+        <Menu size={18} />
+      </button>
+
+      {/* 1. SIDEBAR DESKTOP */}
       <div className="w-68 flex-shrink-0 hidden lg:block border-r border-amber-900/5 bg-white shadow-sm relative z-30">
         <Sidebar />
       </div>
@@ -434,7 +475,7 @@ export default function DonateNowPage() {
                       className="w-full bg-[#FAF6F0]/50 border border-slate-200 rounded-xl p-3 text-xs font-bold flex items-center justify-between shadow-sm hover:bg-[#FAF6F0] transition-all text-left"
                     >
                       <span className="truncate">{selectedShelterDropdown || "Select dynamic vendor asset..."}</span>
-                      <ChevronsUpDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                     </button>
 
                     {isComboOpen && (
@@ -519,24 +560,19 @@ export default function DonateNowPage() {
                               : 'border-slate-200 hover:bg-slate-50 text-slate-700'
                           }`}
                         >
-                          <span className="text-xs font-bold tracking-tight block">{gateway.title}</span>
-                          <span className="text-[9px] font-medium text-slate-400 mt-1">{gateway.sub}</span>
+                          <span className="text-[11px] font-bold block truncate">{gateway.title}</span>
+                          <span className="text-[9px] font-medium text-slate-400 block tracking-wider uppercase mt-1">{gateway.sub}</span>
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Action Submission Trigger */}
-                  <div className="pt-2">
-                    <button
-                      type="submit"
-                      disabled={!customAmount || Number(customAmount) <= 0}
-                      className="w-full py-3 px-4 rounded-xl font-bold uppercase tracking-wider text-xs bg-[#6B1F2A] text-white shadow-md shadow-[#6B1F2A]/10 hover:bg-[#541820] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                    >
-                      <Wallet className="w-4 h-4" />
-                      <span>Confirm Secure Remittance</span>
-                    </button>
-                  </div>
+                  <button 
+                    type="submit" 
+                    className="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider text-center text-white bg-gradient-to-r from-[#6B1F2A] to-[#8C2E3B] hover:from-[#571922] hover:to-[#732530] transition-all shadow-md shadow-[#6B1F2A]/10 mt-2"
+                  >
+                    Confirm Strategic Pipeline Dispatch
+                  </button>
                 </form>
               )}
             </motion.div>

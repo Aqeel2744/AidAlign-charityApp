@@ -9,7 +9,9 @@ import {
   Droplet,
   Users,
   Globe,
-  AlertTriangle
+  AlertTriangle,
+  Menu, // Added single icon to trigger mobile drawer
+  X
 } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
 
@@ -155,6 +157,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ bloodRequests: 12 })
   const [recentUpdates, setRecentUpdates] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
   useEffect(() => {
     const currentFeeds = [
@@ -206,8 +209,47 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-white selection:bg-red-900/10 selection:text-red-950">
-      <div className="mx-auto max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white selection:bg-red-900/10 selection:text-red-950 relative">
+      
+      {/* MOBILE DRAWERS OVERLAY */}
+      <AnimatePresence>
+        {isMobileSidebarOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="fixed inset-0 bg-black z-40 xl:hidden"
+            />
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="fixed inset-y-0 left-0 w-[290px] bg-white z-50 p-6 shadow-2xl xl:hidden overflow-y-auto"
+            >
+              <div className="flex justify-end mb-4">
+                <button onClick={() => setIsMobileSidebarOpen(false)} className="p-2 rounded-xl border border-stone-200 text-stone-700 hover:bg-stone-50">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <Sidebar />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <div className="mx-auto max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8 relative pt-20 xl:pt-8">
+        
+        {/* SINGLE INTEGRATED MOBILE NAVIGATION TRIGGER */}
+        <button 
+          onClick={() => setIsMobileSidebarOpen(true)}
+          className="absolute left-4 top-8 p-2.5 rounded-xl border border-red-900/10 bg-red-50/40 text-red-950 xl:hidden hover:bg-red-50/80 transition-colors z-30"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
         <div className="grid items-start gap-8 xl:grid-cols-[280px_1fr]">
           
           <aside className="sticky top-8 hidden xl:block z-20">
