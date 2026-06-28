@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-1: #0ea5a4;
+  --brand-2: #7c3aed;
+  --warm: #ff7b54;
+}
+
+body { @apply bg-slate-50 text-slate-900 antialiased; }
+
+.container { max-width: 1120px; margin: 0 auto; padding: 2rem; }
+
+.marquee { overflow: hidden; }
+
